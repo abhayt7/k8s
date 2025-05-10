@@ -1,0 +1,14 @@
+service.yml
+apiVersion: v1              # Specifies the Kubernetes API version
+kind: Service               # Declares this manifest as a Service
+metadata:
+  name: nginx-service       # Name of the service
+  namespace: nginx          # Namespace where the service will be created
+spec:
+  selector:
+    app: nginx              # Matches pods with label app=nginx
+  ports:                    # Corrected: 'port' → 'ports' (list of port mappings)
+    - protocol: TCP         # Protocol type (TCP)
+      port: 80              # Port exposed by the service
+      targetPort: 80        # Port on the container the traffic will be forwarded to
+  type: ClusterIP           # Service type: ClusterIP (accessible only inside the cluster)

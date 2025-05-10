@@ -1,0 +1,57 @@
+# API version and kind specify that this is a CronJob resource in batch/v1 API
+apiVersion: batch/v1
+kind: CronJob
+
+# Metadata contains name and namespace for identifying the CronJob
+metadata:
+  name: minute-backup         # Name of the CronJob
+  namespace: nginx            # Namespace where it will be deployed
+
+spec:
+  schedule: "* * * * *"       # Cron schedule: runs every minute
+
+  # Template for the job that runs on each schedule
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: minute-backup  # Label for selecting or identifying pods
+
+        spec:
+          # Container specification
+          containers:
+          - name: backup-container  # Name of the container
+            image: busybox          # Lightweight image for shell commands
+
+            # Shell command to simulate a backup task
+            command:
+            - sh
+            - -c
+            - >
+              echo "Backup Started" ;                       # Log start
+              mkdir -p /backup &&                           # Ensure backup dir exists
+              mkdir -p /demo-data &&                        # Ensure source dir exists
+              cp -r /demo-data/* /backup &&                 # Copy contents from source to backup
+              echo "Backup Complete" ;                      # Log completion
+
+            # Mounting host paths inside the container
+            volumeMounts:
+              - name: data-volume
+                mountPath: /demo-data     # Mount path for source data
+              - name: backup-volume
+                mountPath: /backup        # Mount path for backup destination
+
+          restartPolicy: OnFailure        # Pod will restart only if it fails
+
+          # Volume definitions to link host paths
+          volumes:
+            - name: data-volume
+              hostPath:
+                path: /demo-data          # Path on host for source data
+                type: DirectoryOrCreate   # Create directory if not present
+
+            - name: backup-volume
+              hostPath:
+                path: /backups            # Path on host for storing backups
+                type: DirectoryOrCreate   # Create directory if not present

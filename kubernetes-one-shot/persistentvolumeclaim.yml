@@ -1,0 +1,13 @@
+persistentvolumeclaim.yml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: local-pvc
+  namespace: nginx  # This ensures it matches your deployment namespace
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-storage  # Must match PV's storage class

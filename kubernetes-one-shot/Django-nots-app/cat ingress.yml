@@ -1,0 +1,26 @@
+cat ingress.yml
+apiVersion: networking.k8s.io/v1  # Fixed API version (removed extra dot)
+kind: Ingress
+metadata:
+  name: nginx-notes-ingress       # Name of the Ingress resource
+  namespace: nginx                # Namespace for the Ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - http:
+        paths:
+          - pathType: Prefix
+            path: /nginx          # Route /nginx to nginx-service
+            backend:
+              service:
+                name: nginx-service
+                port:
+                  number: 80
+          - pathType: Prefix
+            path: /            # Route /app to notes-app-service
+            backend:
+              service:
+                name: notes-app-service
+                port:
+                  number: 8000

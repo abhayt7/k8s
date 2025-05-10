@@ -1,0 +1,41 @@
+ stetefulset.yml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql-statefulset                  # Name of the StatefulSet
+  namespace: mysql                         # Namespace where it will be deployed
+spec:
+  serviceName: mysql-service               # Headless service name (must exist)
+  replicas: 3                              # Number of pod replicas
+  selector:
+    matchLabels:
+      app: mysql                           # Match pods with this label
+  template:                                # Template for pod definition
+    metadata:
+      labels:
+        app: mysql                         # Labels applied to each pod
+    spec:
+      containers:
+      - name: mysql                        # Container name
+        image: mysql:8.0                   # MySQL image version
+        ports:
+        - containerPort: 3306              # MySQL default port
+        env:
+        - name: MYSQL_ROOT_PASSWORD        # Set root password via environment variable
+          value: root
+        - name: MYSQL_DATABASE             # Create initial database from ConfigMap
+          valueFrom:
+            configMapKeyRef:
+              name: mysql-config-map       # Name of ConfigMap
+              key: MYSQL_DATABASE          # Key from ConfigMap
+        volumeMounts:
+        - name: mysql-data                 # Reference to the PVC template below
+          mountPath: /var/lib/mysql        # Mount point for MySQL data
+  volumeClaimTemplates:                    # PVC template for each pod
+  - metadata:
+      name: mysql-data                     # Name used in volumeMounts
+    spec:
+      accessModes: [ "ReadWriteOnce" ]     # Volume access mode
+      resources:
+        requests:
+          storage: 1Gi                     # Size of each persistent volume

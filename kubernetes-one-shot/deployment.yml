@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: nginx
+spec:
+  replicas: 2  # fixed typo: "replica" → "replicas"
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:  # fixed typo: "matadate" → "metadata"
+      name: nginx-dep-pod
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80

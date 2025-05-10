@@ -1,0 +1,5 @@
+ namespece.yml
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: notes-app
